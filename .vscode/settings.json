@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "tuple": "cpp",
+        "vector": "cpp",
+        "string": "cpp",
+        "__locale": "cpp",
+        "locale": "cpp"
+    }
+}
