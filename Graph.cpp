@@ -103,10 +103,37 @@ void Graph::deleteEntity(string id) {
     entities.erase(entities.begin() + itAdd);
 }
 
+
+// 
 void Graph::path(string startId, string endId) {
 
     Node* startNode = searchForNode(startId);
     Node* endNode = searchForNode(endId);
+
+    // If either of them is nullptr, node doesn't exist in the graph
+    if (startNode == nullptr || endNode == nullptr) {
+        cout << "failure" << endl;
+        return;
+    }
+
+    // Disclaimer: The idea to use a maxHeap that stores the previous node (parent node!), 
+    // and the current path that led up to the node was produced by generative AI
+    vector<tuple<double, Node*, Node*, vector<Node*>>> maxHeap;
+
+    tuple<double, Node*, Node*, vector<Node*>> startOfPath = make_tuple(0, startNode, nullptr, vector<Node*>{startNode});
+    maxHeap.push_back(startOfPath);
+
+    vector<Node*> visited;
+
+    make_heap(maxHeap.begin(), maxHeap.end());
+
+
+
+
+
+
+
+
 }
 
         
