@@ -103,5 +103,10 @@ void Graph::deleteEntity(string id) {
     entities.erase(entities.begin() + itAdd);
 }
 
+void Graph::path(string startId, string endId) {
+
+    Node* startNode = searchForNode(startId);
+    Node* endNode = searchForNode(endId);
+}
 
         
