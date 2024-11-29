@@ -116,7 +116,7 @@ void Graph::path(string startId, string endId) {
         return;
     }
 
-    // Disclaimer: The idea to use a maxHeap that stores the previous node (parent node!), 
+    // Disclaimer: The idea to use a maxHeap that stores the previous node (parent node), 
     // and the current path that led up to the node was produced by generative AI
     vector<tuple<double, Node*, Node*, vector<Node*>>> maxHeap;
 
@@ -134,7 +134,7 @@ void Graph::path(string startId, string endId) {
         maxHeap.pop_back();
 
         Node* nodeToBeProcessed = get<1>(currentTuple);
-        double weight = get<0>(currentTuple);
+        double nodeProcessingWeight = get<0>(currentTuple);
         vector<Node*> currentPath = get<3>(currentTuple);
 
         bool found = false;
@@ -150,6 +150,45 @@ void Graph::path(string startId, string endId) {
         }
 
         visited.push_back(nodeToBeProcessed);
+
+        if (nodeToBeProcessed == endNode) {
+            for (int i = 0; i < currentPath.size(); i++) {
+                cout << currentPath[i]->getId();
+
+                if (i < currentPath.size() - 1) {
+                    cout << " ";
+                }
+            }
+
+            cout << endl;
+            return;
+        }
+
+        vector<tuple<Node*, string, double>> adjacentNodes = nodeToBeProcessed->getAdjacentNodes();
+        for (int i = 0; i < adjacentNodes.size(); i++) {
+
+            Node* node = get<0>(adjacentNodes[i]);  
+            double adjacentWeight = get<2>(adjacentNodes[i]);
+
+            bool found = false;
+            for (int j = 0; j < visited.size(); j++) {
+                if (visited[j] == node) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found) {
+                continue;
+            }
+
+            
+
+
+
+        }
+
+
 
 
 
