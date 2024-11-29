@@ -116,7 +116,7 @@ void Graph::path(string startId, string endId) {
         return;
     }
 
-    // Disclaimer: The idea to use a maxHeap that stores the previous node (parent node!), 
+    // Disclaimer: The idea to use a maxHeap of tuples that stores the previous node (parent node), 
     // and the current path that led up to the node was produced by generative AI
     vector<tuple<double, Node*, Node*, vector<Node*>>> maxHeap;
 
@@ -126,6 +126,30 @@ void Graph::path(string startId, string endId) {
     vector<Node*> visited;
 
     make_heap(maxHeap.begin(), maxHeap.end());
+
+    while(!maxHeap.empty()) {
+
+        tuple<double, Node*, Node*, vector<Node*>> currentTuple = maxHeap.front();
+        pop_heap(maxHeap.begin(), maxHeap.end());
+        maxHeap.pop_back();
+
+        Node* nodeToBeProcessed = get<1>(currentTuple);
+        double weight = get<0>(currentTuple);
+        vector<Node*> currentPath = get<3>(currentTuple);
+
+        bool found = false;
+        for (int i = 0; i < visited.size(); i++) {
+            if (visited[i] == nodeToBeProcessed) {
+                found = true;
+                break;
+            }
+        }
+
+        
+
+
+
+    }
 
 
 
