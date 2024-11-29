@@ -18,5 +18,7 @@ class Graph {
         void addEntity(string id, string name, string type);
         void printAdjacent(string id);
         void deleteEntity(string id);
+        void path(string startId, string endId);
+
         
 };
