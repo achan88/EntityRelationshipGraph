@@ -11,7 +11,13 @@ int main() {
     while (cin >> command) {
 
         if (command == "LOAD") {
-           cout << "TODO" << endl;
+           
+           string filename;
+           string type;
+           cin >> filename >> type;
+
+           graph.load(filename, type);
+
         } else if (command == "RELATIONSHIP") {
             string sourceId;
             string label;
@@ -19,7 +25,7 @@ int main() {
             double weight;
 
             cin >> sourceId >> label >> destinationId >> weight;
-            graph.addRelationship(sourceId, label, destinationId, weight);
+            graph.addRelationship(sourceId, label, destinationId, weight, true);
         } else if (command == "ENTITY") {
             string id;
             string name;
@@ -27,7 +33,7 @@ int main() {
 
             cin >> id >> name >> type;
 
-            graph.addEntity(id, name, type);
+            graph.addEntity(id, name, type, true);
         } else if (command == "PRINT") {
             string id;
             cin >> id;
