@@ -106,11 +106,14 @@ void Graph::deleteEntity(string id) {
 
 /*
 
-Disclaimer: The idea to use a maxHeap (using make_heap) that stores the previous node (parent node), 
-and the current path that led up to the node was produced by generative AI
+Note: The idea to use a maxHeap (using make_heap) that stores the previous node (parent node), 
+and the current path that led up to the node was produced by generative AI.
 
 */
 void Graph::path(string startId, string endId) {
+
+
+
 
     Node* startNode = searchForNode(startId);
     Node* endNode = searchForNode(endId);
@@ -160,12 +163,12 @@ void Graph::path(string startId, string endId) {
             for (int i = 0; i < currentPath.size(); i++) {
                 cout << currentPath[i]->getId();
 
-                if (i < currentPath.size() - 1) {
+                if (i != currentPath.size() - 1) {
                     cout << " ";
                 }
             }
 
-            cout << endl;
+            cout << " " << nodeProcessingWeight << endl;
             return;
         }
 
@@ -183,7 +186,7 @@ void Graph::path(string startId, string endId) {
                 }
             }
 
-            // node has already been visited, we don't want to readd it to process again
+            // node has already been visited, we don't want to re-add it to process again
             if (found) {
                 continue;
             }
@@ -201,16 +204,40 @@ void Graph::path(string startId, string endId) {
 
 void Graph::highest() {
 
+    double highest = 0;
+    
+
+
+
+
 }
 
 void Graph::findAll(string type, string string) {
 
-    if (input == "name") {
+    if (type == "name") {
 
         for (int i = 0; i < entities.size(); i++) {
-            if (entities[i]->getName() == )
+            if (entities[i]->getName() == string) {
+                cout << entities[i]->getId();
+
+                if (i != entities.size() - 1) {
+                    cout << " ";
+                }
+            }
+        }
+    } else if (type == "type") {
+        for (int i = 0; i < entities.size(); i++) {
+            if (entities[i]->getLabel() == string) {
+                cout << entities[i]->getId();
+
+                if (i != entities.size() - 1) {
+                    cout << " ";
+                }
+            }
         }
     }
+
+    cout << endl;
 }
 
 
