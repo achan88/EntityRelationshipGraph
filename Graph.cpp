@@ -4,7 +4,9 @@
 using namespace std;
 
 Graph::~Graph() {
-    
+    for (int i = 0; i < entities.size(); i++) {
+        delete entities[i];
+    }
 }
 bool Graph::isValidId(string id) {
     for (int i = 0; i < id.length(); i++) {
