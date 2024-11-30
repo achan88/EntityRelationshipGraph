@@ -43,8 +43,8 @@ void Node::addAdjacentNode(Node* node, string label, double weight) {
         }
     }
 
-    tuple<Node*, string, double> myTuple = make_tuple(node, label, weight);
-    adjacentNodes.push_back(myTuple);
+    tuple<Node*, string, double> newTuple = make_tuple(node, label, weight);
+    adjacentNodes.push_back(newTuple);
 }
 
 void Node::removeAdjacentNode(Node* node) {
