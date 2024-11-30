@@ -19,6 +19,8 @@ class Graph {
         void printAdjacent(string id);
         void deleteEntity(string id);
         void path(string startId, string endId);
+        void highest();
+        void findAll(string type, string string);
 
         
 };
