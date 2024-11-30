@@ -183,13 +183,6 @@ void Graph::deleteEntity(string id) {
     cout << "success" << endl;
 }
 
-
-/*
-
-Note: The idea to use a maxHeap (using make_heap) that stores the previous node (parent node), 
-and the current path that led up to the node was produced by generative AI.
-
-*/
 void Graph::path(string startId, string endId) {
 
     try {
@@ -210,9 +203,10 @@ void Graph::path(string startId, string endId) {
         return;
     }
 
-    vector<tuple<double, Node*, Node*, vector<Node*>>> maxHeap;
+    // weight, current node, vector of node path (path taken all way up to and including that particular node)
+    vector<tuple<double, Node*, vector<Node*>>> maxHeap;
 
-    tuple<double, Node*, Node*, vector<Node*>> startOfPath = make_tuple(0, startNode, nullptr, vector<Node*>{startNode});
+    tuple<double, Node*, vector<Node*>> startOfPath = make_tuple(0, startNode, vector<Node*>{startNode});
     maxHeap.push_back(startOfPath);
 
     vector<Node*> processed;
@@ -221,26 +215,13 @@ void Graph::path(string startId, string endId) {
 
     while(!maxHeap.empty()) {
 
-        tuple<double, Node*, Node*, vector<Node*>> currentTuple = maxHeap.front();
+        tuple<double, Node*, vector<Node*>> currentTuple = maxHeap.front();
         pop_heap(maxHeap.begin(), maxHeap.end());
         maxHeap.pop_back();
 
         Node* nodeToBeProcessed = get<1>(currentTuple);
         double nodeProcessingWeight = get<0>(currentTuple);
-        vector<Node*> currentPath = get<3>(currentTuple);
-
-        bool found = false;
-        for (int i = 0; i < processed.size(); i++) {
-            if (processed[i] == nodeToBeProcessed) {
-                found = true;
-                break;
-            }
-        }
-
-        // this means that the node has already been visited
-        if (found) {
-            continue;
-        }
+        vector<Node*> currentPath = get<2>(currentTuple);
 
         processed.push_back(nodeToBeProcessed);
 
@@ -280,18 +261,19 @@ void Graph::path(string startId, string endId) {
             newPath.push_back(node);
 
             // Note: this logic here was also corrected by AI
-            maxHeap.push_back(make_tuple(nodeProcessingWeight + adjacentWeight, node, nodeToBeProcessed, newPath));
+            maxHeap.push_back(make_tuple(nodeProcessingWeight + adjacentWeight, node, newPath));
             push_heap(maxHeap.begin(), maxHeap.end());
 
         }   
     }
+    cout << "failure" << endl;
 }
 
 tuple<double, Node*, Node*> Graph::pathHelper(Node* startNode, Node* endNode) {
 
-    vector<tuple<double, Node*, Node*, vector<Node*>>> maxHeap;
+    vector<tuple<double, Node*, vector<Node*>>> maxHeap;
 
-    tuple<double, Node*, Node*, vector<Node*>> startOfPath = make_tuple(0, startNode, nullptr, vector<Node*>{startNode});
+    tuple<double, Node*, vector<Node*>> startOfPath = make_tuple(0, startNode, vector<Node*>{startNode});
     maxHeap.push_back(startOfPath);
 
     vector<Node*> processed;
@@ -300,13 +282,13 @@ tuple<double, Node*, Node*> Graph::pathHelper(Node* startNode, Node* endNode) {
 
     while(!maxHeap.empty()) {
 
-        tuple<double, Node*, Node*, vector<Node*>> currentTuple = maxHeap.front();
+        tuple<double, Node*, vector<Node*>> currentTuple = maxHeap.front();
         pop_heap(maxHeap.begin(), maxHeap.end());
         maxHeap.pop_back();
 
         Node* nodeToBeProcessed = get<1>(currentTuple);
         double nodeProcessingWeight = get<0>(currentTuple);
-        vector<Node*> currentPath = get<3>(currentTuple);
+        vector<Node*> currentPath = get<2>(currentTuple);
 
         bool found = false;
         for (int i = 0; i < processed.size(); i++) {
@@ -348,7 +330,7 @@ tuple<double, Node*, Node*> Graph::pathHelper(Node* startNode, Node* endNode) {
             vector<Node*> newPath = currentPath;
             newPath.push_back(node);
 
-            maxHeap.push_back(make_tuple(nodeProcessingWeight + adjacentWeight, node, nodeToBeProcessed, newPath));
+            maxHeap.push_back(make_tuple(nodeProcessingWeight + adjacentWeight, node, newPath));
             push_heap(maxHeap.begin(), maxHeap.end());
 
         }   
@@ -421,11 +403,3 @@ void Graph::findAll(string type, string string) {
 
     cout << endl;
 }
-
-
-
-
-
-
-
-        
