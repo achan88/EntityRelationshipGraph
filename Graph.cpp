@@ -1,5 +1,7 @@
 #include "Graph.h"
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include "illegal_exception.h"
 using namespace std;
 
@@ -27,33 +29,83 @@ Node* Graph::searchForNode(string id) {
     return nullptr;
 }
 
-void Graph::addRelationship(string sourceId, string label, string destinationId, double weight) {
+void Graph::load(string filename, string type) {
+
+    ifstream file(filename);
+    string line;
+
+    if (type == "entities") {
+
+        while (getline(file, line)) {
+            istringstream stringstream(line);
+            string id;
+            string name;
+            string newType;
+
+            stringstream >> id >> name >> newType;
+
+            addEntity(id, name, newType, false);
+        }
+
+
+
+    } else if (type == "relationships") {
+        while (getline(file, line)) {
+            istringstream stringstream(line);
+            string sourceId;
+            string label;
+            string destinationId;
+            double weight;
+
+            stringstream >> sourceId >> label >> destinationId >> weight;
+
+            addRelationship(sourceId, label, destinationId, weight, false);
+        }
+    }
+
+    file.close();
+}
+
+void Graph::addRelationship(string sourceId, string label, string destinationId, double weight, bool print) {
     Node* sourceNode = searchForNode(sourceId);
     Node* destinationNode = searchForNode(destinationId);
 
     if (sourceNode == nullptr || destinationNode == nullptr) {
-        cout << "failure" << endl;
+
+        if (print) {
+            cout << "failure" << endl;
+        }
         return;
     }
 
     sourceNode->addAdjacentNode(destinationNode, label, weight);
     destinationNode->addAdjacentNode(sourceNode, label, weight);
-    cout << "success" << endl;
+
+    if (print) {
+        cout << "success" << endl;
+    }
 }
 
-void Graph::addEntity(string id, string name, string type) {
+void Graph::addEntity(string id, string name, string type, bool print) {
     Node* node = searchForNode(id);
 
     if (node) {
         node->setName(name);
         node->setLabel(type);
-        cout << "success" << endl;
+        if (print) {
+            cout << "success" << endl;
+        }
+        
         return;
     }
 
     node = new Node(type, id, name);
     entities.push_back(node);
-    cout << "success" << endl;
+
+    if (print) {
+        cout << "success" << endl;
+    }
+    
 
 
 }
