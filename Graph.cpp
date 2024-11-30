@@ -106,7 +106,7 @@ void Graph::deleteEntity(string id) {
 
 /*
 
-Disclaimer: The idea to use a maxHeap that stores the previous node (parent node), 
+Disclaimer: The idea to use a maxHeap (using make_heap) that stores the previous node (parent node), 
 and the current path that led up to the node was produced by generative AI
 
 */
@@ -183,6 +183,7 @@ void Graph::path(string startId, string endId) {
                 }
             }
 
+            // node has already been visited, we don't want to readd it to process again
             if (found) {
                 continue;
             }
@@ -200,6 +201,16 @@ void Graph::path(string startId, string endId) {
 
 void Graph::highest() {
 
+}
+
+void Graph::findAll(string type, string string) {
+
+    if (input == "name") {
+
+        for (int i = 0; i < entities.size(); i++) {
+            if (entities[i]->getName() == )
+        }
+    }
 }
 
 
