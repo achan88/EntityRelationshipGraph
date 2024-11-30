@@ -56,6 +56,7 @@ int main() {
         } else if (command == "FINDALL") {
             string type;
             string string;
+            cin >> type >> string;
 
             graph.findAll(type, string);
         } else if (command == "EXIT") {
