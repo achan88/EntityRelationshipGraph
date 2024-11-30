@@ -30,6 +30,4 @@ class Node {
 
         void removeAdjacentNode(Node* node);
 
-        bool isAdjacentNode(Node* node);
-
 };
