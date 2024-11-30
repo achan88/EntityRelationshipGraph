@@ -203,7 +203,8 @@ void Graph::path(string startId, string endId) {
         return;
     }
 
-    // weight, current node, vector of node path (path taken all way up to and including that particular node)
+    // Total path weight, current node, vector of node path (path taken all way up to and including that particular node). 
+    // Double comes first because that's how the heap algorithm sorts tuples
     vector<tuple<double, Node*, vector<Node*>>> maxHeap;
 
     tuple<double, Node*, vector<Node*>> startOfPath = make_tuple(0, startNode, vector<Node*>{startNode});
@@ -215,9 +216,9 @@ void Graph::path(string startId, string endId) {
 
     while(!maxHeap.empty()) {
 
-        tuple<double, Node*, vector<Node*>> currentTuple = maxHeap.front();
-        pop_heap(maxHeap.begin(), maxHeap.end());
-        maxHeap.pop_back();
+        tuple<double, Node*, vector<Node*>> currentTuple = maxHeap.front(); // This gets the top most element of the heap (neighbouring node with the highest weighted edge)
+        pop_heap(maxHeap.begin(), maxHeap.end()); // pop_heap only pushes element to the back
+        maxHeap.pop_back(); // Remove it from the actual vector
 
         Node* nodeToBeProcessed = get<1>(currentTuple);
         double nodeProcessingWeight = get<0>(currentTuple);
@@ -225,6 +226,7 @@ void Graph::path(string startId, string endId) {
 
         processed.push_back(nodeToBeProcessed);
 
+        // Since there's only one unique path, if we see the end, immediately return
         if (nodeToBeProcessed == endNode) {
             for (int i = 0; i < currentPath.size(); i++) {
                 cout << currentPath[i]->getId();
@@ -238,6 +240,7 @@ void Graph::path(string startId, string endId) {
             return;
         }
 
+        // In order for a node to be marked processed, we want to add all neighbouring nodes for exploration
         vector<tuple<Node*, string, double>> adjacentNodes = nodeToBeProcessed->getAdjacentNodes();
         for (int i = 0; i < adjacentNodes.size(); i++) {
 
@@ -252,7 +255,7 @@ void Graph::path(string startId, string endId) {
                 }
             }
 
-            // node has already been visited, we don't want to re-add it to process again
+            // Node has already been visited, we don't want to re-add it to process again
             if (found) {
                 continue;
             }
@@ -260,7 +263,6 @@ void Graph::path(string startId, string endId) {
             vector<Node*> newPath = currentPath;
             newPath.push_back(node);
 
-            // Note: this logic here was also corrected by AI
             maxHeap.push_back(make_tuple(nodeProcessingWeight + adjacentWeight, node, newPath));
             push_heap(maxHeap.begin(), maxHeap.end());
 
@@ -289,18 +291,6 @@ tuple<double, Node*, Node*> Graph::pathHelper(Node* startNode, Node* endNode) {
         Node* nodeToBeProcessed = get<1>(currentTuple);
         double nodeProcessingWeight = get<0>(currentTuple);
         vector<Node*> currentPath = get<2>(currentTuple);
-
-        bool found = false;
-        for (int i = 0; i < processed.size(); i++) {
-            if (processed[i] == nodeToBeProcessed) {
-                found = true;
-                break;
-            }
-        }
-
-        if (found) {
-            continue;
-        }
 
         processed.push_back(nodeToBeProcessed);
 
@@ -361,7 +351,7 @@ void Graph::highest() {
 
     for (int i = 0; i < entities.size(); i++) {
         for (int j = i + 1; j < entities.size(); j++) {
-            tuple<double, Node*, Node*> comparisonPath = pathHelper(entities[j], entities[i]);
+            tuple<double, Node*, Node*> comparisonPath = pathHelper(entities[i], entities[j]); 
             if (get<0>(comparisonPath) > get<0>(maxWeightedPath)) {
 
                 if (get<1>(comparisonPath) != nullptr) {
