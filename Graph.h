@@ -9,6 +9,7 @@ class Graph {
 
         bool isValidId(string id);
         Node* searchForNode(string id);
+        tuple<double, Node*, Node*>  pathHelper(Node* startNode, Node* endNode);
     
     public:
         Graph() = default;
@@ -22,6 +23,5 @@ class Graph {
         void path(string startId, string endId);
         void highest();
         void findAll(string type, string string);
-
         
 };
