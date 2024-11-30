@@ -1,4 +1,6 @@
 #include "Node.h"
+#include <tuple>
+#include <vector>
 
 Node::Node(string label, string id, string name) {
     this->label = label;

@@ -1,7 +1,10 @@
 #include "Graph.h"
 #include <iostream>
+#include <vector>
+#include <tuple>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 #include "illegal_exception.h"
 using namespace std;
 
@@ -376,7 +379,7 @@ void Graph::highest() {
 
     for (int i = 0; i < entities.size(); i++) {
         for (int j = i + 1; j < entities.size(); j++) {
-            tuple<double, Node*, Node*> comparisonPath = pathHelper(entities[i], entities[j]);
+            tuple<double, Node*, Node*> comparisonPath = pathHelper(entities[j], entities[i]);
             if (get<0>(comparisonPath) > get<0>(maxWeightedPath)) {
 
                 if (get<1>(comparisonPath) != nullptr) {
