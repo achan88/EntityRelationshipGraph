@@ -1,5 +1,6 @@
 #include "Graph.h"
 #include <iostream>
+#include "illegal_exception.h"
 using namespace std;
 
 Graph::~Graph() {
@@ -55,6 +56,15 @@ void Graph::addEntity(string id, string name, string type) {
 
 }
 void Graph::printAdjacent(string id) {
+
+    try {
+        if (!isValidId(id)) {
+            throw illegal_exception();
+        }
+    } catch (const illegal_exception&) {
+        cout << "illegal argument" << endl;
+    }
+
     Node* node = searchForNode(id);
 
     if (node == nullptr) {
@@ -75,6 +85,14 @@ void Graph::printAdjacent(string id) {
 }
 
 void Graph::deleteEntity(string id) {
+
+    try {
+        if (!isValidId(id)) {
+            throw illegal_exception();
+        }
+    } catch (const illegal_exception&) {
+        cout << "illegal argument" << endl;
+    }
 
     Node* node = searchForNode(id); 
 
@@ -113,7 +131,13 @@ and the current path that led up to the node was produced by generative AI.
 void Graph::path(string startId, string endId) {
 
 
-
+    try {
+        if (!isValidId(startId) || !isValidId(endId)) {
+            throw illegal_exception();
+        }
+    } catch (const illegal_exception&) {
+        cout << "illegal argument" << endl;
+    }
 
     Node* startNode = searchForNode(startId);
     Node* endNode = searchForNode(endId);
@@ -123,7 +147,6 @@ void Graph::path(string startId, string endId) {
         cout << "failure" << endl;
         return;
     }
-
 
     vector<tuple<double, Node*, Node*, vector<Node*>>> maxHeap;
 
