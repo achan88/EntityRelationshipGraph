@@ -104,7 +104,12 @@ void Graph::deleteEntity(string id) {
 }
 
 
-// 
+/*
+
+Disclaimer: The idea to use a maxHeap that stores the previous node (parent node), 
+and the current path that led up to the node was produced by generative AI
+
+*/
 void Graph::path(string startId, string endId) {
 
     Node* startNode = searchForNode(startId);
@@ -116,14 +121,13 @@ void Graph::path(string startId, string endId) {
         return;
     }
 
-    // Disclaimer: The idea to use a maxHeap that stores the previous node (parent node), 
-    // and the current path that led up to the node was produced by generative AI
+
     vector<tuple<double, Node*, Node*, vector<Node*>>> maxHeap;
 
     tuple<double, Node*, Node*, vector<Node*>> startOfPath = make_tuple(0, startNode, nullptr, vector<Node*>{startNode});
     maxHeap.push_back(startOfPath);
 
-    vector<Node*> visited;
+    vector<Node*> processed;
 
     make_heap(maxHeap.begin(), maxHeap.end());
 
@@ -138,18 +142,19 @@ void Graph::path(string startId, string endId) {
         vector<Node*> currentPath = get<3>(currentTuple);
 
         bool found = false;
-        for (int i = 0; i < visited.size(); i++) {
-            if (visited[i] == nodeToBeProcessed) {
+        for (int i = 0; i < processed.size(); i++) {
+            if (processed[i] == nodeToBeProcessed) {
                 found = true;
                 break;
             }
         }
 
+        // this means that the node has already been visited
         if (found) {
             continue;
         }
 
-        visited.push_back(nodeToBeProcessed);
+        processed.push_back(nodeToBeProcessed);
 
         if (nodeToBeProcessed == endNode) {
             for (int i = 0; i < currentPath.size(); i++) {
@@ -171,8 +176,8 @@ void Graph::path(string startId, string endId) {
             double adjacentWeight = get<2>(adjacentNodes[i]);
 
             bool found = false;
-            for (int j = 0; j < visited.size(); j++) {
-                if (visited[j] == node) {
+            for (int j = 0; j < processed.size(); j++) {
+                if (processed[j] == node) {
                     found = true;
                     break;
                 }
@@ -181,26 +186,26 @@ void Graph::path(string startId, string endId) {
             if (found) {
                 continue;
             }
-
             
+            vector<Node*> newPath = currentPath;
+            newPath.push_back(node);
 
+            // Note: this logic here was also corrected by AI
+            maxHeap.push_back(make_tuple(nodeProcessingWeight + adjacentWeight, node, nodeToBeProcessed, newPath));
+            push_heap(maxHeap.begin(), maxHeap.end());
 
-
-        }
-
-
-
-
-
+        }   
     }
+}
 
-
-
-
-
-
-
+void Graph::highest() {
 
 }
+
+
+
+
+
+
 
         
