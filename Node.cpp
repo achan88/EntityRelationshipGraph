@@ -55,6 +55,7 @@ void Node::removeAdjacentNode(Node* node) {
     }
 
 }
+
 bool Node::isAdjacentNode(Node* node) {
     for (int i = 0; i < adjacentNodes.size(); i++) {
         if (get<0>(adjacentNodes[i]) == node) {
@@ -63,5 +64,3 @@ bool Node::isAdjacentNode(Node* node) {
     }
     return false;
 }
-
-
