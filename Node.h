@@ -26,10 +26,10 @@ class Node {
         void setName(string newName);
 
 
-        void Node::addAdjacentNode(Node* node, string label, double weight);
+        void addAdjacentNode(Node* node, string label, double weight);
 
-        void Node::removeAdjacentNode(Node* node);
+        void removeAdjacentNode(Node* node);
 
-        bool Node::isAdjacentNode(Node* node);
+        bool isAdjacentNode(Node* node);
 
 };
