@@ -14,8 +14,9 @@ class Graph {
         Graph() = default;
         ~Graph();
 
-        void addRelationship(string sourceId, string label, string destinationId, double weight);
-        void addEntity(string id, string name, string type);
+        void load(string filename, string type);
+        void addRelationship(string sourceId, string label, string destinationId, double weight, bool print);
+        void addEntity(string id, string name, string type, bool print);
         void printAdjacent(string id);
         void deleteEntity(string id);
         void path(string startId, string endId);
