@@ -8,11 +8,14 @@
 #include "illegal_exception.h"
 using namespace std;
 
+// Normal destructor
 Graph::~Graph() {
     for (int i = 0; i < entities.size(); i++) {
         delete entities[i];
     }
 }
+
+// Checks if id is within these three character ranges, if it is not, it contains an invalid character, and we return false
 bool Graph::isValidId(string id) {
     for (int i = 0; i < id.length(); i++) {
         if (!((id[i] >= 'A' && id[i] <= 'Z') || (id[i] >= 'a' && id[i] <= 'z') || (id[i] >= '0' && id[i] <= '9'))) {
@@ -22,6 +25,7 @@ bool Graph::isValidId(string id) {
     return true;
 }
 
+// Linearly traverse the vector of entities to find if a corresponding id is in the graph, if not, return nullptr for indication
 Node* Graph::searchForNode(string id) {
 
     for (int i = 0; i < entities.size(); i++) {
@@ -34,11 +38,13 @@ Node* Graph::searchForNode(string id) {
 
 void Graph::load(string filename, string type) {
 
+    // set up file stream reader
     ifstream file(filename);
     string line;
 
     if (type == "entities") {
 
+        // reading a single line from the file
         while (getline(file, line)) {
             istringstream stringstream(line);
             string id;
@@ -47,6 +53,7 @@ void Graph::load(string filename, string type) {
 
             stringstream >> id >> name >> newType;
 
+            // print flag set to false, load should only output success once 
             addEntity(id, name, newType, false);
         }
 
@@ -62,6 +69,7 @@ void Graph::load(string filename, string type) {
 
             stringstream >> sourceId >> label >> destinationId >> weight;
 
+            // print flag set to false, load should only output success once 
             addRelationship(sourceId, label, destinationId, weight, false);
         }
     }
@@ -72,28 +80,37 @@ void Graph::load(string filename, string type) {
 }
 
 void Graph::addRelationship(string sourceId, string label, string destinationId, double weight, bool print) {
+
+    // Get corresponding id nodes in the graph
     Node* sourceNode = searchForNode(sourceId);
     Node* destinationNode = searchForNode(destinationId);
-
+    
+    // Ensure that these nodes actually exist, otherwise, failure
     if (sourceNode == nullptr || destinationNode == nullptr) {
 
+        // Control output for load
         if (print) {
             cout << "failure" << endl;
         }
         return;
     }
 
+    // Graph is undirected, so both source and destination and can be interchanged. Add to both nodes' adjacency lists
     sourceNode->addAdjacentNode(destinationNode, label, weight);
     destinationNode->addAdjacentNode(sourceNode, label, weight);
 
+    // Control output for load
     if (print) {
         cout << "success" << endl;
     }
 }
 
 void Graph::addEntity(string id, string name, string type, bool print) {
+
+    // Search for corresponding node with given id
     Node* node = searchForNode(id);
 
+    // Node exists, then update its values
     if (node) {
         node->setName(name);
         node->setLabel(type);
@@ -104,6 +121,7 @@ void Graph::addEntity(string id, string name, string type, bool print) {
         return;
     }
 
+    // Otherwise, we create a new node, and add it to the list of vertices
     node = new Node(type, id, name);
     entities.push_back(node);
 
@@ -115,6 +133,7 @@ void Graph::addEntity(string id, string name, string type, bool print) {
 
 void Graph::printAdjacent(string id) {
 
+    // Illegal argument checker
     try {
         if (!isValidId(id)) {
             throw illegal_exception();
@@ -123,25 +142,30 @@ void Graph::printAdjacent(string id) {
         cout << "illegal argument" << endl;
         return;
     }
-
+    
+    // Node searching 
     Node* node = searchForNode(id);
 
+    // Invalid node, failure
     if (node == nullptr) {
         cout << "failure" << endl;
         return;
     }
 
+    // No adjacent nodes
     if (node->getAdjacentNodes().size() == 0) {
         cout << endl;
         return;
     }
 
+    // Print out all adjacent nodes id
     for (int i = 0; i < node->getAdjacentNodes().size(); i++) {
         cout << get<0>(node->getAdjacentNodes()[i])->getId() << " ";
     }
 
     cout << endl;
 }
+
 
 void Graph::deleteEntity(string id) {
 
@@ -156,11 +180,13 @@ void Graph::deleteEntity(string id) {
 
     Node* node = searchForNode(id); 
 
+    // Node doesn't exist, cannot delete, failure
     if (node == nullptr) {
         cout << "failure" << endl;
         return;
     }
-
+    
+    // Remove the node from all other nodes' adjacency lists
     for (int i = 0; i < entities.size(); i++) {
 
         if (entities[i] != node) {
@@ -176,8 +202,10 @@ void Graph::deleteEntity(string id) {
         }
     }
 
+    // Deallocate memory
     delete node;
 
+    // Erase from entitiy vector, and shifts elements left to close the space
     entities.erase(entities.begin() + itAdd);
 
     cout << "success" << endl;
@@ -185,6 +213,7 @@ void Graph::deleteEntity(string id) {
 
 void Graph::path(string startId, string endId) {
 
+    // Input validation
     try {
         if (!isValidId(startId) || !isValidId(endId)) {
             throw illegal_exception();
@@ -193,7 +222,8 @@ void Graph::path(string startId, string endId) {
         cout << "illegal argument" << endl;
         return;
     }
-
+    
+    // For the corresponding nodes
     Node* startNode = searchForNode(startId);
     Node* endNode = searchForNode(endId);
 
@@ -203,13 +233,15 @@ void Graph::path(string startId, string endId) {
         return;
     }
 
-    // Total path weight, current node, vector of node path (path taken all way up to and including that particular node). 
-    // Double comes first because that's how the heap algorithm sorts tuples
+    // Total path weight, current node, node path (path taken all way up to and including that particular node). 
+    // Max heap to get highest weighted edge in efficient time O(1)
     vector<tuple<double, Node*, vector<Node*>>> maxHeap;
 
+    // Starting node starts off our path
     tuple<double, Node*, vector<Node*>> startOfPath = make_tuple(0, startNode, vector<Node*>{startNode});
     maxHeap.push_back(startOfPath);
 
+    // Keep track of nodes that have been visited already
     vector<Node*> processed;
 
     make_heap(maxHeap.begin(), maxHeap.end());
@@ -220,6 +252,7 @@ void Graph::path(string startId, string endId) {
         pop_heap(maxHeap.begin(), maxHeap.end()); // pop_heap only pushes element to the back
         maxHeap.pop_back(); // Remove it from the actual vector
 
+        // Extract required data fromthe current tuple (node, weight, path)
         Node* nodeToBeProcessed = get<1>(currentTuple);
         double nodeProcessingWeight = get<0>(currentTuple);
         vector<Node*> currentPath = get<2>(currentTuple);
@@ -240,13 +273,14 @@ void Graph::path(string startId, string endId) {
             return;
         }
 
-        // In order for a node to be marked processed, we want to add all neighbouring nodes for exploration
+        // In order for a node to be marked as processed, we add all neighbouring nodes for exploration into binary max heap
         vector<tuple<Node*, string, double>> adjacentNodes = nodeToBeProcessed->getAdjacentNodes();
         for (int i = 0; i < adjacentNodes.size(); i++) {
 
             Node* node = get<0>(adjacentNodes[i]);  
             double adjacentWeight = get<2>(adjacentNodes[i]);
 
+            // Check if this node has already been visited previously
             bool found = false;
             for (int j = 0; j < processed.size(); j++) {
                 if (processed[j] == node) {
@@ -260,17 +294,23 @@ void Graph::path(string startId, string endId) {
                 continue;
             }
             
+            // Form the new path for the adjacent nodes
             vector<Node*> newPath = currentPath;
             newPath.push_back(node);
 
             maxHeap.push_back(make_tuple(nodeProcessingWeight + adjacentWeight, node, newPath));
+
+            // This makes heapifies the vector again to maintain max heap properties
             push_heap(maxHeap.begin(), maxHeap.end());
 
         }   
     }
+
+    // No path is found, path fails (disconnected graph)
     cout << "failure" << endl;
 }
 
+// Same logic as path function, but with a slight modification, comments are the same as path function
 tuple<double, Node*, Node*> Graph::pathHelper(Node* startNode, Node* endNode) {
 
     vector<tuple<double, Node*, vector<Node*>>> maxHeap;
@@ -295,7 +335,8 @@ tuple<double, Node*, Node*> Graph::pathHelper(Node* startNode, Node* endNode) {
         processed.push_back(nodeToBeProcessed);
 
         if (nodeToBeProcessed == endNode) {
-
+            
+            // If we reach the end, return the weight, start, and end, as a tuple for comparison in highest()
             return make_tuple(nodeProcessingWeight, startNode, endNode);
         }
 
@@ -325,11 +366,14 @@ tuple<double, Node*, Node*> Graph::pathHelper(Node* startNode, Node* endNode) {
 
         }   
     }
+
+    // No path found, just send to default values
     return make_tuple(0, nullptr, nullptr);
 }
 
 void Graph::highest() {    
 
+    // No vertices, failure
     if (entities.size() == 0) {
         cout << "failure" << endl;
         return;
@@ -342,6 +386,7 @@ void Graph::highest() {
         }
     }
 
+    // Graph is disconnected, failure
     if (hasAnEdge == false) {
         cout << "failure" << endl;
         return;
@@ -349,6 +394,7 @@ void Graph::highest() {
 
     tuple<double, Node*, Node*>  maxWeightedPath = make_tuple(0, nullptr, nullptr);
 
+    // Compare every pair of entities in the graph to find the highest weighted path
     for (int i = 0; i < entities.size(); i++) {
         for (int j = i + 1; j < entities.size(); j++) {
             tuple<double, Node*, Node*> comparisonPath = pathHelper(entities[i], entities[j]); 
@@ -370,8 +416,11 @@ void Graph::findAll(string type, string string) {
 
     if (type == "name") {
 
+        // Flag to see if there has been at least once match
+        bool atLeastOne = false;
         for (int i = 0; i < entities.size(); i++) {
             if (entities[i]->getName() == string) {
+                atLeastOne = true;
                 cout << entities[i]->getId();
 
                 if (i != entities.size() - 1) {
@@ -379,17 +428,31 @@ void Graph::findAll(string type, string string) {
                 }
             }
         }
+
+        // No matches exist, failure
+        if (atLeastOne == false) {
+            cout << "failure" << endl;
+        } else {
+            cout << endl;
+        }
     } else if (type == "type") {
+
+        bool atLeastOne = false;
         for (int i = 0; i < entities.size(); i++) {
             if (entities[i]->getLabel() == string) {
                 cout << entities[i]->getId();
+                atLeastOne = true;
 
                 if (i != entities.size() - 1) {
                     cout << " ";
                 }
             }
         }
-    }
 
-    cout << endl;
+        if (atLeastOne == false) {
+            cout << "failure" << endl;
+        } else {
+            cout << endl;
+        }
+    }
 }

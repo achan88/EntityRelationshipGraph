@@ -7,7 +7,8 @@ Node::Node(string label, string id, string name) {
     this->id = id;
     this->name = name;
 }
-        
+
+// Trivial accessor and mutator methods
 string Node::getLabel() {
 
     return label;
@@ -35,6 +36,7 @@ vector<tuple<Node*, string, double>>& Node::getAdjacentNodes() {
 
 void Node::addAdjacentNode(Node* node, string label, double weight) {
             
+    // If this node already forms and edge, update its label and weight
     for (int i = 0; i < adjacentNodes.size(); i++) {
         if (get<0>(adjacentNodes[i]) == node) {
             get<1>(adjacentNodes[i]) = label;
@@ -43,12 +45,14 @@ void Node::addAdjacentNode(Node* node, string label, double weight) {
         }
     }
 
+    // Otherwise, make a new tuple, and add it to adjacency list
     tuple<Node*, string, double> newTuple = make_tuple(node, label, weight);
     adjacentNodes.push_back(newTuple);
 }
 
 void Node::removeAdjacentNode(Node* node) {
 
+    // Check to see if it exists, if it does delete, if it doesn't, do nothing
     for (int i = 0; i < adjacentNodes.size(); i++) {
         if (get<0>(adjacentNodes[i]) == node) {
             adjacentNodes.erase(adjacentNodes.begin() + i);
