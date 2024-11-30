@@ -63,6 +63,8 @@ void Graph::load(string filename, string type) {
         }
     }
 
+    cout << "success" << endl;
+
     file.close();
 }
 
@@ -105,10 +107,9 @@ void Graph::addEntity(string id, string name, string type, bool print) {
     if (print) {
         cout << "success" << endl;
     }
-    
-
 
 }
+
 void Graph::printAdjacent(string id) {
 
     try {
@@ -117,6 +118,7 @@ void Graph::printAdjacent(string id) {
         }
     } catch (const illegal_exception&) {
         cout << "illegal argument" << endl;
+        return;
     }
 
     Node* node = searchForNode(id);
@@ -146,6 +148,7 @@ void Graph::deleteEntity(string id) {
         }
     } catch (const illegal_exception&) {
         cout << "illegal argument" << endl;
+        return;
     }
 
     Node* node = searchForNode(id); 
@@ -173,6 +176,8 @@ void Graph::deleteEntity(string id) {
     delete node;
 
     entities.erase(entities.begin() + itAdd);
+
+    cout << "success" << endl;
 }
 
 
@@ -184,13 +189,13 @@ and the current path that led up to the node was produced by generative AI.
 */
 void Graph::path(string startId, string endId) {
 
-
     try {
         if (!isValidId(startId) || !isValidId(endId)) {
             throw illegal_exception();
         }
     } catch (const illegal_exception&) {
         cout << "illegal argument" << endl;
+        return;
     }
 
     Node* startNode = searchForNode(startId);
@@ -279,13 +284,110 @@ void Graph::path(string startId, string endId) {
     }
 }
 
-void Graph::highest() {
+tuple<double, Node*, Node*> Graph::pathHelper(Node* startNode, Node* endNode) {
 
-    double highest = 0;
-    
+    vector<tuple<double, Node*, Node*, vector<Node*>>> maxHeap;
 
+    tuple<double, Node*, Node*, vector<Node*>> startOfPath = make_tuple(0, startNode, nullptr, vector<Node*>{startNode});
+    maxHeap.push_back(startOfPath);
 
+    vector<Node*> processed;
 
+    make_heap(maxHeap.begin(), maxHeap.end());
+
+    while(!maxHeap.empty()) {
+
+        tuple<double, Node*, Node*, vector<Node*>> currentTuple = maxHeap.front();
+        pop_heap(maxHeap.begin(), maxHeap.end());
+        maxHeap.pop_back();
+
+        Node* nodeToBeProcessed = get<1>(currentTuple);
+        double nodeProcessingWeight = get<0>(currentTuple);
+        vector<Node*> currentPath = get<3>(currentTuple);
+
+        bool found = false;
+        for (int i = 0; i < processed.size(); i++) {
+            if (processed[i] == nodeToBeProcessed) {
+                found = true;
+                break;
+            }
+        }
+
+        if (found) {
+            continue;
+        }
+
+        processed.push_back(nodeToBeProcessed);
+
+        if (nodeToBeProcessed == endNode) {
+
+            return make_tuple(nodeProcessingWeight, startNode, endNode);
+        }
+
+        vector<tuple<Node*, string, double>> adjacentNodes = nodeToBeProcessed->getAdjacentNodes();
+        for (int i = 0; i < adjacentNodes.size(); i++) {
+
+            Node* node = get<0>(adjacentNodes[i]);  
+            double adjacentWeight = get<2>(adjacentNodes[i]);
+
+            bool found = false;
+            for (int j = 0; j < processed.size(); j++) {
+                if (processed[j] == node) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found) {
+                continue;
+            }
+            
+            vector<Node*> newPath = currentPath;
+            newPath.push_back(node);
+
+            maxHeap.push_back(make_tuple(nodeProcessingWeight + adjacentWeight, node, nodeToBeProcessed, newPath));
+            push_heap(maxHeap.begin(), maxHeap.end());
+
+        }   
+    }
+    return make_tuple(0, nullptr, nullptr);
+}
+
+void Graph::highest() {    
+
+    if (entities.size() == 0) {
+        cout << "failure" << endl;
+        return;
+    }
+
+    bool hasAnEdge = false;
+    for (int i = 0; i < entities.size(); i++) {
+        if (entities[i]->getAdjacentNodes().size() > 0) {
+            hasAnEdge = true;
+        }
+    }
+
+    if (hasAnEdge == false) {
+        cout << "failure" << endl;
+        return;
+    }
+
+    tuple<double, Node*, Node*>  maxWeightedPath = make_tuple(0, nullptr, nullptr);
+
+    for (int i = 0; i < entities.size(); i++) {
+        for (int j = i + 1; j < entities.size(); j++) {
+            tuple<double, Node*, Node*> comparisonPath = pathHelper(entities[i], entities[j]);
+            if (get<0>(comparisonPath) > get<0>(maxWeightedPath)) {
+
+                if (get<1>(comparisonPath) != nullptr) {
+                    maxWeightedPath = comparisonPath;
+                }
+
+            }
+        }
+    }
+
+    cout << get<1>(maxWeightedPath)->getId() << " " << get<2>(maxWeightedPath)->getId() << " " << get<0>(maxWeightedPath) << endl;
 
 }
 
