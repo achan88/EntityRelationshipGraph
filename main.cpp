@@ -52,7 +52,7 @@ int main() {
             graph.path(id1, id2);
         } else if (command == "HIGHEST") {
 
-            cout << "TODO" << endl;
+            graph.highest();
         } else if (command == "FINDALL") {
             string type;
             string string;
