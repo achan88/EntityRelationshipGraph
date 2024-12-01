@@ -4,6 +4,7 @@
         "vector": "cpp",
         "string": "cpp",
         "__locale": "cpp",
-        "locale": "cpp"
+        "locale": "cpp",
+        "iostream": "cpp"
     }
 }
