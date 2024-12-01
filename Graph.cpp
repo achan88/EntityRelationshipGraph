@@ -437,6 +437,7 @@ void Graph::findAll(string type, string string) {
         }
     } else if (type == "type") {
 
+        // Flag to see if there is a match
         bool atLeastOne = false;
         for (int i = 0; i < entities.size(); i++) {
             if (entities[i]->getLabel() == string) {
@@ -449,6 +450,7 @@ void Graph::findAll(string type, string string) {
             }
         }
 
+        // No matches, therefore no nodes in the graph contain the input type
         if (atLeastOne == false) {
             cout << "failure" << endl;
         } else {
