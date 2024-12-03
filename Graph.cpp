@@ -160,7 +160,11 @@ void Graph::printAdjacent(string id) {
 
     // Print out all adjacent nodes id
     for (int i = 0; i < node->getAdjacentNodes().size(); i++) {
-        cout << get<0>(node->getAdjacentNodes()[i])->getId() << " ";
+        cout << get<0>(node->getAdjacentNodes()[i])->getId();
+
+        if (i != node->getAdjacentNodes().size() - 1) {
+            cout << " ";
+        }
     }
 
     cout << endl;
@@ -205,12 +209,17 @@ void Graph::deleteEntity(string id) {
     // Deallocate memory
     delete node;
 
-    // Erase from entitiy vector, and shifts elements left to close the space
+    // Erase from entity vector, and shifts elements left to close the space
     entities.erase(entities.begin() + itAdd);
 
     cout << "success" << endl;
 }
 
+/*
+
+    The idea to use a max heap that stores the current path was provided by ChatGPT
+
+*/
 void Graph::path(string startId, string endId) {
 
     // Input validation
@@ -223,11 +232,11 @@ void Graph::path(string startId, string endId) {
         return;
     }
     
-    // For the corresponding nodes
+    // Search for the corresponding nodes
     Node* startNode = searchForNode(startId);
     Node* endNode = searchForNode(endId);
 
-    // If either of them is nullptr, node doesn't exist in the graph
+    // If either of them is nullptr, path doesn't exist in the graph
     if (startNode == nullptr || endNode == nullptr) {
         cout << "failure" << endl;
         return;
@@ -243,8 +252,6 @@ void Graph::path(string startId, string endId) {
 
     // Keep track of nodes that have been visited already
     vector<Node*> processed;
-
-    make_heap(maxHeap.begin(), maxHeap.end());
 
     while(!maxHeap.empty()) {
 
@@ -300,11 +307,11 @@ void Graph::path(string startId, string endId) {
 
             maxHeap.push_back(make_tuple(nodeProcessingWeight + adjacentWeight, node, newPath));
 
-            // This makes heapifies the vector again to maintain max heap properties
+            // This heapifies the vector again to maintain max heap properties
             push_heap(maxHeap.begin(), maxHeap.end());
 
         }   
-    }
+    }   
 
     // No path is found, path fails (disconnected graph)
     cout << "failure" << endl;
@@ -319,8 +326,6 @@ tuple<double, Node*, Node*> Graph::pathHelper(Node* startNode, Node* endNode) {
     maxHeap.push_back(startOfPath);
 
     vector<Node*> processed;
-
-    make_heap(maxHeap.begin(), maxHeap.end());
 
     while(!maxHeap.empty()) {
 
@@ -367,7 +372,7 @@ tuple<double, Node*, Node*> Graph::pathHelper(Node* startNode, Node* endNode) {
         }   
     }
 
-    // No path found, just send to default values
+    // No path found, just return default values
     return make_tuple(0, nullptr, nullptr);
 }
 
